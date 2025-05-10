@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "908268878636",
+    "project_id": "markx-35fec",
+    "storage_bucket": "markx-35fec.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:908268878636:android:3d91fd8d112ea4693c4a89",
+        "android_client_info": {
+          "package_name": "com.example.mark_x"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "908268878636-b3nbcrh78gl8culpaqlj2emv25894vs8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mark_x",
+            "certificate_hash": "ed0b3fff3366c5d6c883dcc68fc1681e6c0b6e30"
+          }
+        },
+        {
+          "client_id": "908268878636-tjg7l6oa1ppq1fir1ht9e1sdpve7fc6b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVJrDpoyfrHGN2FFdwXyGJNeAtD9pzxL4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "908268878636-tjg7l6oa1ppq1fir1ht9e1sdpve7fc6b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "908268878636-cm43h199qho7oqd69tjss47u6ufcfka1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.markx"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
