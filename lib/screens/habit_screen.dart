@@ -3,7 +3,6 @@ import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import 'package:mark_x/components/habit_tile.dart';
 import 'package:mark_x/constant/datetime.dart';
 import 'package:mark_x/data/sample_habit.dart';
-import 'package:intl/intl.dart';
 
 class HabitScreen extends StatefulWidget {
   const HabitScreen({super.key});

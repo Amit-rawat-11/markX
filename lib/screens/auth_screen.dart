@@ -6,6 +6,8 @@ import 'package:mark_x/screens/main_screen.dart';
 class AuthScreen extends StatelessWidget {
   final GoogleSignInService _googleSignInService = GoogleSignInService();
 
+  AuthScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

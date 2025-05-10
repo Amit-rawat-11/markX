@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mark_x/firebase_options.dart';
 import 'package:mark_x/screens/auth_screen.dart';
-import 'package:mark_x/screens/main_screen.dart';
 import 'package:mark_x/theme/dark_theme.dart';
 // import 'package:mark_x/theme/light_theme.dart';
 

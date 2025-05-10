@@ -9,7 +9,6 @@ import 'package:mark_x/constant/datetime.dart';
 import 'package:mark_x/data/sample_habit.dart';
 import 'package:mark_x/data/sample_journal.dart';
 import 'package:mark_x/perosnalization_logic/pet_selection.dart';
-import 'package:mark_x/screens/account_screen.dart';
 
 // import 'package:mark_x/screens/account_screen.dart';
 // import 'package:mark_x/screens/food_logging_screen.dart';

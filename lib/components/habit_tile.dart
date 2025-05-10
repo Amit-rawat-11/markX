@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mark_x/constant/colors.dart';
-import 'package:mark_x/data/sample_habit.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/flutter_percent_indicator.dart';
 
 class HabitTile extends StatelessWidget {
