@@ -9,6 +9,7 @@ import 'package:mark_x/constant/datetime.dart';
 import 'package:mark_x/data/sample_habit.dart';
 import 'package:mark_x/data/sample_journal.dart';
 import 'package:mark_x/perosnalization_logic/pet_selection.dart';
+import 'package:mark_x/screens/account_screen.dart';
 
 // import 'package:mark_x/screens/account_screen.dart';
 // import 'package:mark_x/screens/food_logging_screen.dart';
@@ -24,20 +25,9 @@ class HomeScreen extends StatelessWidget {
   // Constants for static data
   final String name = '';
   final String petPath = PetSelection(pet: "Cat").petPath;
-  User? user = FirebaseAuth.instance.currentUser;
+  final User? user = FirebaseAuth.instance.currentUser;
 
-  // Notification click handler
-  _onNotificationClicked(BuildContext context) {
-    //  Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) => const AccountScreen(),
-    //     ),
-    //   );
-    // Go to Account screen
-  }
 
-  // Example of a recent entry model
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +43,27 @@ class HomeScreen extends StatelessWidget {
           children: [
             // Circular button for user profile
             CircularElevatedButton(
-              onpressed: _onNotificationClicked(context),
+              onpressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AccountScreen(),
+                  ),
+                );
+              },
               iconData: LucideIcons.settings,
             ),
             const Text("Mark X"),
             // Circular button for notifications
             CircularElevatedButton(
-              onpressed: _onNotificationClicked(context),
+              onpressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AccountScreen(),
+                  ),
+                );
+              },
               iconData: LucideIcons.bell,
             ),
           ],

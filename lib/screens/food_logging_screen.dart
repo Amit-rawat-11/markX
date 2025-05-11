@@ -8,7 +8,7 @@ import 'package:mark_x/constant/datetime.dart';
 import 'package:mark_x/data/sample_food.dart';
 import 'package:mark_x/firebase/firestore_Service.dart';
 import 'package:mark_x/models/food_item.dart';
-import 'package:mark_x/screens/auth_screen.dart';
+import 'package:mark_x/screens/signup_screen.dart';
 import 'package:mark_x/theme/text_style.dart';
 
 class FoodLoggingScreen extends StatefulWidget {
@@ -24,7 +24,7 @@ void logout(BuildContext context) async {
   await FirebaseAuth.instance.signOut();
   Navigator.pushReplacement(
     context,
-    MaterialPageRoute(builder: (_) => AuthScreen()),
+    MaterialPageRoute(builder: (_) =>   SignupScreen()),
   );
 }
 
@@ -182,7 +182,7 @@ class _FoodLoggingScreenState extends State<FoodLoggingScreen> {
                         FirebaseFirestore.instance
                             .collection('users')
                             .doc(FirebaseAuth.instance.currentUser?.uid)
-                            .collection('foodloging')
+                            .collection('foodlogging')
                             .get(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {

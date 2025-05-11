@@ -70,6 +70,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '908268878636',
     projectId: 'markx-35fec',
     storageBucket: 'markx-35fec.firebasestorage.app',
+    androidClientId: '908268878636-b3nbcrh78gl8culpaqlj2emv25894vs8.apps.googleusercontent.com',
+    iosClientId: '908268878636-cm43h199qho7oqd69tjss47u6ufcfka1.apps.googleusercontent.com',
     iosBundleId: 'com.example.markx',
   );
+
 }

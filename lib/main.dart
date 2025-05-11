@@ -1,30 +1,61 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:mark_x/firebase_options.dart';
-import 'package:mark_x/screens/auth_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mark_x/screens/main_screen.dart';
+import 'package:mark_x/screens/signup_screen.dart';
 import 'package:mark_x/theme/dark_theme.dart';
-// import 'package:mark_x/theme/light_theme.dart';
+
+// Only required if you're manually adding FirebaseOptions
+const FirebaseOptions firebaseOptions = FirebaseOptions(
+  apiKey: "AIzaSyAcr1fZVqrIwC544BYnYm7j8tZv27Nl_Kg",
+  authDomain: "markx-35fec.firebaseapp.com",
+  projectId: "markx-35fec",
+  storageBucket: "markx-35fec.firebasestorage.app",
+  messagingSenderId: "908268878636",
+  appId: "1:908268878636:web:53aedb692fd742823c4a89",
+  measurementId: "G-610QFPXEQM"
+);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Initialize Firebase
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await Firebase.initializeApp(
+    options: firebaseOptions,
+  );
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'MarkX',
       debugShowCheckedModeBanner: false,
-      //  theme: lightTheme, // Your custom light theme
       darkTheme: darkTheme,
       themeMode: ThemeMode.dark,
-      title: 'MarkX',
+      home: const AuthWrapper(),
+    );
+  }
+}
 
-      home: AuthScreen(),
-      // home: MainScreen(),
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          final user = snapshot.data;
+          return user != null ? MainScreen() : SignupScreen();
+        }
+
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      },
     );
   }
 }
