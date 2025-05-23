@@ -13,15 +13,19 @@ const FirebaseOptions firebaseOptions = FirebaseOptions(
   storageBucket: "markx-35fec.firebasestorage.app",
   messagingSenderId: "908268878636",
   appId: "1:908268878636:web:53aedb692fd742823c4a89",
-  measurementId: "G-610QFPXEQM"
+  measurementId: "G-610QFPXEQM",
 );
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: firebaseOptions,
-  );
+  try {
+    // Only initialize if no app is already initialized
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(options: firebaseOptions);
+    }
+  } catch (e) {
+    print('Firebase already initialized: $e');
+  }
 
   runApp(const MyApp());
 }

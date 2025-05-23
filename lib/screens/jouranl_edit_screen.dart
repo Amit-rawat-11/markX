@@ -1,98 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:mark_x/constant/colors.dart';
 import 'package:mark_x/constant/datetime.dart';
-import 'package:mark_x/data/sample_journal.dart';
 import 'package:mark_x/firebase/firestore_Service.dart';
 import 'package:mark_x/models/journal.dart';
 import 'package:mark_x/theme/text_style.dart';
 
-class JouranlEditScreen extends StatefulWidget {
-  final int? index;
-  const JouranlEditScreen({super.key, this.index});
+class JournalEditScreen extends StatefulWidget {
+  final String? documentId; // Use this instead of index
+
+  const JournalEditScreen({super.key, this.documentId});
 
   @override
-  State<JouranlEditScreen> createState() => _JouranlEditScreenState();
+  State<JournalEditScreen> createState() => _JournalEditScreenState();
 }
 
-class _JouranlEditScreenState extends State<JouranlEditScreen> {
-  late TextEditingController titlecontroller;
-  late TextEditingController contentcontroller;
+class _JournalEditScreenState extends State<JournalEditScreen> {
+  late TextEditingController titleController;
+  late TextEditingController contentController;
+  final firestoreService = FirestoreService();
 
-  bool get isEditing => widget.index != null;
+  bool get isEditing => widget.documentId != null;
 
   @override
   void initState() {
     super.initState();
+    titleController = TextEditingController();
+    contentController = TextEditingController();
 
-    // Use existing data if editing, else empty for new entry
-    titlecontroller = TextEditingController(
-      text: isEditing ? demoJournalEntries[widget.index!].title : '',
-    );
-    contentcontroller = TextEditingController(
-      text: isEditing ? demoJournalEntries[widget.index!].content : '',
-    );
+    if (isEditing) {
+      _loadJournal();
+    }
   }
 
-  @override
-  void dispose() {
-    titlecontroller.dispose();
-    contentcontroller.dispose();
-    super.dispose();
+  Future<void> _loadJournal() async {
+    final entry = await firestoreService.getJournalEntry(widget.documentId!);
+    if (entry != null) {
+      titleController.text = entry.title;
+      contentController.text = entry.content;
+    }
   }
 
-  final firestoreService = FirestoreService();
-
-// Inside saveEntry function
-
-
-  void saveEntry() {
-    final title = titlecontroller.text.trim();
-    final content = contentcontroller.text.trim();
+  void saveEntry() async {
+    final title = titleController.text.trim();
+    final content = contentController.text.trim();
 
     if (title.isEmpty || content.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.red[400],
-          content: Text(
-            "Please fill in both title and content.",
-            style: TextStyle(color: Colors.white),
-          ),
-          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.red,
+          content: Text("Please fill in both title and content"),
         ),
       );
       return;
     }
 
+    final entry = JournalEntry(
+      title: title,
+      content: content,
+      timestamp: DateTime.now(),
+    );
+
     if (isEditing) {
-      demoJournalEntries[widget.index!] = JournalEntry(
-        title: title,
-        content: content,
-        timestamp: DateTime.now(),
-      );
+      await firestoreService.updateJournalEntry(widget.documentId!, entry);
     } else {
-      demoJournalEntries.insert(
-        0,
-        JournalEntry(title: title, content: content, timestamp: DateTime.now()),
-        
-      );
-      firestoreService.addJournalEntry(
-         JournalEntry(
-    title: title,
-    content: content,
-    timestamp: DateTime.now(),
-  ));
+      await firestoreService.addJournalEntry(entry);
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.green[400],
-        content: Text(
-          isEditing ? "Entry updated successfully!" : "Journal entry saved!",
-          style: TextStyle(color: Colors.white),
-        ),
-        duration: const Duration(seconds: 2),
+        backgroundColor: Colors.green,
+        content: Text(isEditing ? "Entry updated!" : "Journal entry saved!"),
       ),
     );
 
@@ -100,51 +77,46 @@ class _JouranlEditScreenState extends State<JouranlEditScreen> {
   }
 
   @override
+  void dispose() {
+    titleController.dispose();
+    contentController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        // title: Text(isEditing ? "Edit Journal" : "New Journal"),
         title: Text(TimeUtils.formattedDate),
-        actions: [
-          IconButton(icon: const Icon(Icons.save), onPressed: saveEntry),
-        ],
+        actions: [IconButton(icon: Icon(Icons.save), onPressed: saveEntry)],
       ),
-
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: GRBackground.grbackground,
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 TextField(
-                  controller: titlecontroller,
+                  controller: titleController,
                   maxLines: 1,
                   decoration: InputDecoration(
                     labelText: 'Heading',
                     labelStyle: MXTextStyles.bodyBold,
-                    enabledBorder: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black45, width: 1),
-                    ),
+                    border: OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 20),
                 TextField(
-                  controller: contentcontroller,
+                  controller: contentController,
                   maxLines: null,
                   decoration: InputDecoration(
                     labelText: 'Journal Entry',
                     labelStyle: MXTextStyles.bodyBold,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black38),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(width: 1),
-                    ),
+                    border: OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -164,7 +136,3 @@ class _JouranlEditScreenState extends State<JouranlEditScreen> {
     );
   }
 }
-
-
-
-

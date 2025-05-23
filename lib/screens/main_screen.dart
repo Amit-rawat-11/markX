@@ -24,7 +24,7 @@ class _MainScreenState extends State<MainScreen> {
     JournalScreen(),
     FoodLoggingScreen(),
     AccountScreen(),
-    JouranlEditScreen(),
+    JournalEditScreen(),
   ];
 
   @override
