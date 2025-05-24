@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
+  
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 

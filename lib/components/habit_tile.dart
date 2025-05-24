@@ -7,11 +7,11 @@ class HabitTile extends StatelessWidget {
   final bool habitCompleted;
   final Function(bool?)? onChanged;
   final double? habitProgress;
-  final String? habitPriority;
+  final String habitPriority;
   const HabitTile({
     required this.habitName,
     required this.habitCompleted,
-    this.habitPriority,
+    required this.habitPriority,
     this.habitProgress,
     required this.onChanged,
     super.key,
@@ -34,21 +34,31 @@ class HabitTile extends StatelessWidget {
               scale: 1.2,
               child: Checkbox(value: habitCompleted, onChanged: onChanged),
             ),
-            Text(habitName, style: TextStyle(fontSize: 18)),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.55,
+              child: Text(
+                habitName,
+                style: TextStyle(fontSize: 18),
+                softWrap: true,
+                maxLines: 2,
+                overflow: TextOverflow.visible,
+              ),
+            ),
             const Spacer(),
             SizedBox(
               width: 70,
               height: 40,
-              child: CircularPercentIndicator(
-                radius: 20,
-                percent: habitProgress!.isZero ? 50/100 : habitProgress! / 100 ,
-                lineWidth: 8,
-                progressColor: MXColors.progressbar,
-                backgroundColor: MXColors.card,
-                animation: true,
-                animationDuration: 3000,
-                circularStrokeCap: CircularStrokeCap.round,
-              ),
+              child: Chip(label: Text(habitPriority!)),
+              // child: CircularPercentIndicator(
+              //   radius: 20,
+              //   percent: habitProgress!.isZero ? 50/100 : habitProgress! / 100 ,
+              //   lineWidth: 8,
+              //   progressColor: MXColors.progressbar,
+              //   backgroundColor: MXColors.card,
+              //   animation: true,
+              //   animationDuration: 3000,
+              //   circularStrokeCap: CircularStrokeCap.round,
+              // ),
             ),
           ],
         ),

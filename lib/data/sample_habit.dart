@@ -1,4 +1,4 @@
-import 'package:mark_x/models/goal.dart';
+import 'package:mark_x/models/habit.dart';
 
 List<Habit> demohabits = [
   Habit(

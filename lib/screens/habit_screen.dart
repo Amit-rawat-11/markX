@@ -4,8 +4,7 @@ import 'package:mark_x/components/habit_alert.dart';
 import 'package:mark_x/components/habit_tile.dart';
 import 'package:mark_x/constant/datetime.dart';
 import 'package:mark_x/firebase/firestore_Service.dart';
-import 'package:mark_x/models/goal.dart';
-
+import 'package:mark_x/models/habit.dart';
 
 class HabitScreen extends StatefulWidget {
   const HabitScreen({super.key});
@@ -62,29 +61,25 @@ class _HabitScreenState extends State<HabitScreen> {
       } else {
         habit.completedDates.remove(normalizedToday);
       }
-      // Optionally update progress here if you want to calculate progress dynamically
     });
 
-    // Update lastUpdated to now
     habit.lastUpdated = DateTime.now();
 
-    // Update in Firestore
     if (habit.id != null) {
       await _firestoreService.updateHabit(habit.id!, habit);
     }
   }
 
   void _showAddHabitDialog() async {
-    final result = await showDialog<String>(
-      context: context,
-      builder: (context) => const AddHabitDialog(),
-    );
-
-    if (result != null && result.isNotEmpty) {
-      print("New habit xfhddddddddddddddddddddddddddddddddddddddddddddddddddname: $result");
-      // TODO: Add new habit to Firestore and reload habits list
-      // You can create a Habit object and call _firestoreService.addHabits(...)
-      // then reload habits via _loadHabits()
+    final result = await showDialog<Habit>(
+  context: context,
+  builder: (context) => const AddHabitDialog(),
+);
+    if (result != null ) {
+      await _firestoreService.addHabits(result);
+      setState(() {
+        _loadHabits(); // refresh
+      });
     }
   }
 
@@ -128,26 +123,76 @@ class _HabitScreenState extends State<HabitScreen> {
                       print("Selected date is $value");
                     },
                   ),
-                  ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: habits.length,
-                    itemBuilder: (context, index) {
-                      final habit = habits[index];
-                      return HabitTile(
-                        habitName: habit.title,
-                        habitCompleted: habit.completedDates.contains(
-                          DateTime(
-                            DateTime.now().year,
-                            DateTime.now().month,
-                            DateTime.now().day,
+                  if (habits.isEmpty) ...[
+                    const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text(
+                        "You have no habits yet.\nSwipe to remove. Tap + to add.",
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    
+                  ] else
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: habits.length,
+                      itemBuilder: (context, index) {
+                        final habit = habits[index];
+
+                        return Dismissible(
+                          key: Key(habit.id ?? habit.title),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            alignment: Alignment.centerRight,
+                            color: Colors.red,
+                            child: const Icon(Icons.delete, color: Colors.white),
                           ),
-                        ),
-                        onChanged: (value) => checkboxChanged(value, index),
-                        habitProgress: habit.progress,
-                      );
-                    },
-                  ),
+                          confirmDismiss: (direction) async {
+                            return await showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text("Delete Habit"),
+                                content: const Text("Are you sure you want to delete this habit?"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(false),
+                                    child: const Text("Cancel"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(true),
+                                    child: const Text("Delete", style: TextStyle(color: Colors.red)),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          onDismissed: (direction) async {
+                            if (habit.id != null) {
+                              await _firestoreService.deleteHabit(habit.id!);
+                            }
+
+                            setState(() {
+                              habits.removeAt(index);
+                            });
+                          },
+                          child: HabitTile(
+                            habitName: habit.title,
+                            habitCompleted: habit.completedDates.contains(
+                              DateTime(
+                                DateTime.now().year,
+                                DateTime.now().month,
+                                DateTime.now().day,
+                              ),
+                            ),
+                            onChanged: (value) => checkboxChanged(value, index),
+                            habitPriority: habit.priority,
+                          ),
+                        );
+                      },
+                    ),
                 ],
               ),
       ),

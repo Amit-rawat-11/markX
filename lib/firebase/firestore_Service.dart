@@ -1,9 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+    import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mark_x/models/food_item.dart';
-import 'package:mark_x/models/goal.dart';
-import 'package:mark_x/models/journal.dart';// <-- make sure to import Habit model
-
+import 'package:mark_x/models/habit.dart';
+import 'package:mark_x/models/journal.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -34,10 +33,10 @@ class FirestoreService {
           .collection('journals')
           .doc(documentId)
           .update({
-            'title': entry.title,
-            'content': entry.content,
-            'timestamp': entry.timestamp,
-          });
+        'title': entry.title,
+        'content': entry.content,
+        'timestamp': entry.timestamp,
+      });
     } catch (e) {
       print("Error updating journal entry: $e");
     }
@@ -48,13 +47,13 @@ class FirestoreService {
     if (userId == null) return null;
 
     try {
-      final doc =
-          await _db
-              .collection('users')
-              .doc(userId)
-              .collection('journals')
-              .doc(documentId)
-              .get();
+      final doc = await _db
+          .collection('users')
+          .doc(userId)
+          .collection('journals')
+          .doc(documentId)
+          .get();
+
       if (doc.exists) {
         final data = doc.data()!;
         return JournalEntry(
@@ -90,32 +89,49 @@ class FirestoreService {
     }
   }
 
-  // New method to fetch habits list
   Future<List<Habit>> fetchHabits() async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return [];
 
+    // Helper to safely parse timestamp fields
+    DateTime parseTimestamp(dynamic value) {
+      if (value == null) return DateTime.now();
+      if (value is Timestamp) return value.toDate();
+      if (value is DateTime) return value;
+      return DateTime.now();
+    }
+
+    // Helper to safely parse completedDates list
+    List<DateTime> parseCompletedDates(dynamic value) {
+      if (value == null) return [];
+      if (value is List) {
+        return value.map((d) {
+          if (d is Timestamp) return d.toDate();
+          if (d is DateTime) return d;
+          return DateTime.now();
+        }).toList();
+      }
+      return [];
+    }
+
     try {
-      final querySnapshot = await _db.collection('users').doc(userId).collection('habits').get();
+      final querySnapshot =
+          await _db.collection('users').doc(userId).collection('habits').get();
 
       return querySnapshot.docs.map((doc) {
         final data = doc.data();
         return Habit(
-          
+          id: doc.id,
           title: data['title'] ?? '',
           description: data['desc'] ?? '',
           progress: (data['progress'] ?? 0.0).toDouble(),
           priority: data['priority'] ?? 'Medium',
           isCompleted: data['isCompleted'] ?? false,
-          startDate: (data['start_date'] as Timestamp).toDate(),
-          endDate: (data['end_date'] as Timestamp).toDate(),
-          lastUpdated: (data['lastUpdated'] as Timestamp).toDate(),
-          completedDates: (data['completedDates'] as List<dynamic>)
-              .map((ts) => (ts as Timestamp).toDate())
-              .toList(),
-          id: doc.id, // You might want to add an 'id' field in your Habit model for updating
+          startDate: parseTimestamp(data['start_date']),
+          endDate: parseTimestamp(data['end_date']),
+          lastUpdated: parseTimestamp(data['lastUpdated']),
+          completedDates: parseCompletedDates(data['completedDates']),
         );
-        
       }).toList();
     } catch (e) {
       print('Error fetching habits: $e');
@@ -123,13 +139,17 @@ class FirestoreService {
     }
   }
 
-  // New method to update habit (pass habit with updated fields and document ID)
   Future<void> updateHabit(String documentId, Habit habit) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return;
 
     try {
-      await _db.collection('users').doc(userId).collection('habits').doc(documentId).update({
+      await _db
+          .collection('users')
+          .doc(userId)
+          .collection('habits')
+          .doc(documentId)
+          .update({
         'title': habit.title,
         'desc': habit.description,
         'start_date': habit.startDate,
@@ -144,6 +164,8 @@ class FirestoreService {
       print("Error updating habit: $e");
     }
   }
+
+  
 
   Future<void> logFood(FoodItem food) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
@@ -160,4 +182,19 @@ class FirestoreService {
       print("Error logging food: $e");
     }
   }
+
+
+  
+Future<void> deleteHabit(String habitId) async {
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) return;
+
+  await FirebaseFirestore.instance
+      .collection('users')
+      .doc(uid)
+      .collection('habits')
+      .doc(habitId)
+      .delete();
+}
+
 }

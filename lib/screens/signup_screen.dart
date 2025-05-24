@@ -5,7 +5,7 @@ import 'package:mark_x/firebase/signup_service.dart';
 import 'package:mark_x/screens/main_screen.dart'; // Replace with your actual screen
 
 class SignupScreen extends StatefulWidget {
-  SignupScreen({super.key});
+  const SignupScreen({super.key});
 
   @override
   _SignupScreenState createState() => _SignupScreenState();
